@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Hook: pre-merge-commit
+# This hook blocks merges that use fast-forward
+# and enforces the use of --no-ff
+
+MERGE_HEAD=$(git rev-parse -q --verify MERGE_HEAD)
+
+# Only act if there is an ongoing merge
+if [ -n "$MERGE_HEAD" ]; then
+    # Check if it is a fast-forward merge
+    if git merge-base --is-ancestor $MERGE_HEAD HEAD; then
+        echo "❌ Fast-forward merge detected. Use '--no-ff' to keep the history clean."
+        exit 1
+    fi
+fi
+
+exit 0
